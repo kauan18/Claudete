@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
+import { cn } from "@/lib/cn";
 
 /**
- * Botão de alternância de tema claro/escuro.
+ * Interruptor horizontal de tema claro/escuro.
+ * - Track em pílula com knob deslizante; o ícone dentro do knob mostra o tema ATUAL,
+ *   e o ícone-alvo aparece esmaecido na outra ponta.
  * - Alterna a classe `dark` no <html> e persiste em localStorage.
  * - Liga a classe `theme-transition` por ~0.5s para animar as cores suavemente.
- * - Os ícones de sol/lua fazem crossfade com rotação ao clicar.
  */
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const [dark, setDark] = useState(false);
@@ -31,34 +34,37 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   return (
     <button
+      type="button"
+      role="switch"
+      aria-checked={dark}
       onClick={toggle}
       aria-label={dark ? "Ativar modo claro" : "Ativar modo escuro"}
       title={dark ? "Modo claro" : "Modo escuro"}
-      className={`relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-700 ${className}`}
+      className={cn(
+        "relative inline-flex h-7 w-[52px] shrink-0 items-center rounded-full border border-line transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-page",
+        dark ? "bg-primary/20" : "bg-subtle",
+        className,
+      )}
     >
-      {/* Sol (visível no modo claro) */}
-      <svg
-        viewBox="0 0 24 24"
-        className={`absolute h-5 w-5 fill-none stroke-current transition-all duration-500 ${
-          mounted && dark ? "scale-0 -rotate-90 opacity-0" : "scale-100 rotate-0 opacity-100"
-        }`}
-        strokeWidth={2}
-        strokeLinecap="round"
-        aria-hidden="true"
+      {/* Ícones-alvo nas pontas (esmaecidos; o do lado ativo fica sob o knob) */}
+      <Sun className="pointer-events-none absolute left-[7px] h-3.5 w-3.5 text-ink-muted" aria-hidden="true" />
+      <Moon className="pointer-events-none absolute right-[7px] h-3.5 w-3.5 text-ink-muted" aria-hidden="true" />
+
+      {/* Knob deslizante com o ícone do tema atual */}
+      <span
+        className={cn(
+          "absolute left-[2px] flex h-6 w-6 items-center justify-center rounded-full bg-surface shadow-soft",
+          mounted && "transition-transform duration-300 ease-out",
+          dark ? "translate-x-[24px]" : "translate-x-0",
+        )}
       >
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-      </svg>
-      {/* Lua (visível no modo escuro) */}
-      <svg
-        viewBox="0 0 24 24"
-        className={`absolute h-5 w-5 fill-current transition-all duration-500 ${
-          mounted && dark ? "scale-100 rotate-0 opacity-100" : "scale-0 rotate-90 opacity-0"
-        }`}
-        aria-hidden="true"
-      >
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
-      </svg>
+        {dark ? (
+          <Moon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+        ) : (
+          <Sun className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+        )}
+      </span>
     </button>
   );
 }

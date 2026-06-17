@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { sendAppointmentConfirmation } from "@/lib/whatsapp";
+import { getPlan } from "@/lib/plans";
 
 const manualSchema = z.object({
   patientName: z.string().min(2, "Nome obrigatório"),
@@ -78,8 +79,8 @@ export async function updateAppointmentStatus(formData: FormData) {
 
   await prisma.appointment.update({ where: { id }, data: { status } });
 
-  // Envia WhatsApp de confirmação ao paciente
-  if (status === "confirmado") {
+  // Envia WhatsApp de confirmação ao paciente (apenas planos com WhatsApp)
+  if (status === "confirmado" && getPlan(appt.clinic.plan).whatsapp) {
     sendAppointmentConfirmation({
       patientPhone: appt.patientPhone,
       patientName: appt.patientName,

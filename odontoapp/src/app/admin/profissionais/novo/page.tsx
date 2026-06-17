@@ -1,6 +1,7 @@
 import { createProfessional } from "../actions";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/form";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export default function NovoProfissional() {
   return (
@@ -20,9 +21,8 @@ export default function NovoProfissional() {
           <label className={labelClass}>Bio / Apresentação</label>
           <textarea name="bio" rows={4} className={`${inputClass} resize-none`} placeholder="Descreva a formação e experiência do profissional" />
         </div>
-        <div>
-          <label className={labelClass}>URL da foto</label>
-          <input name="photo" type="url" className={inputClass} placeholder="https://..." />
+        <div className="max-w-xs">
+          <ImageUpload name="photo" label="Foto do profissional" />
         </div>
         <div className="flex gap-3 pt-2">
           <Button type="submit">Cadastrar Profissional</Button>

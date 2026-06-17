@@ -11,7 +11,8 @@ const schema = z.object({
   name: z.string().min(2),
   specialty: z.string().optional(),
   bio: z.string().optional(),
-  photo: z.string().url().optional().or(z.literal("")),
+  // Aceita URL externa ou caminho de upload (/uploads/...)
+  photo: z.string().optional(),
   active: z.coerce.boolean().optional(),
 });
 

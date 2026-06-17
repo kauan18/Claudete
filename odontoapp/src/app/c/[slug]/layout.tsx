@@ -7,6 +7,7 @@ import { WhatsAppButton } from "@/components/public/WhatsAppButton";
 import { ChatWidget } from "@/components/public/ChatWidget";
 import { brandVars } from "@/lib/brand";
 import { getPlan } from "@/lib/plans";
+import { absoluteUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }>; children: React.ReactNode };
 
@@ -14,9 +15,25 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
   const { slug } = await params;
   const clinic = await getClinicBySlug(slug);
   if (!clinic) return { title: "Clínica não encontrada" };
+  const description = clinic.description ?? undefined;
   return {
     title: `${clinic.name} | OdontoApp`,
-    description: clinic.description ?? undefined,
+    description,
+    alternates: { canonical: absoluteUrl(`/c/${clinic.slug}`) },
+    openGraph: {
+      title: clinic.name,
+      description,
+      type: "website",
+      url: absoluteUrl(`/c/${clinic.slug}`),
+      siteName: clinic.name,
+      locale: "pt_BR",
+      images: clinic.logo ? [{ url: absoluteUrl(clinic.logo) }] : undefined,
+    },
+    twitter: {
+      card: "summary",
+      title: clinic.name,
+      description,
+    },
   };
 }
 

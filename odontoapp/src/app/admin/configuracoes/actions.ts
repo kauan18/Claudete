@@ -8,6 +8,7 @@ import { z } from "zod";
 const schema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/, "Use apenas letras minúsculas, números e hífens"),
+  logo: z.string().optional(),
   description: z.string().optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
@@ -29,6 +30,7 @@ export async function updateClinicSettings(formData: FormData) {
   const parsed = schema.parse({
     name: formData.get("name"),
     slug: formData.get("slug"),
+    logo: (formData.get("logo") as string) ?? undefined,
     description: formData.get("description") || undefined,
     address: formData.get("address") || undefined,
     phone: formData.get("phone") || undefined,

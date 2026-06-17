@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Rotas públicas com match EXATO (não usar prefixo — senão "/" liberaria tudo)
-const PUBLIC_EXACT = ["/", "/login", "/privacidade"];
+const PUBLIC_EXACT = ["/", "/login", "/privacidade", "/planos"];
 // Rotas públicas por prefixo. Inclui as APIs anônimas (agendamento, disponibilidade)
 // e o cron (que se autentica por CRON_SECRET próprio, não por sessão de usuário).
 const PUBLIC_PREFIXES = [

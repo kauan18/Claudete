@@ -32,6 +32,9 @@ model Clinic {
   primaryColor   String  @default("#0ea5e9")
   secondaryColor String  @default("#0369a1")
 
+  // Plano de assinatura: basico | pro | premium
+  plan String @default("basico")
+
   // WhatsApp Cloud API (por tenant)
   waToken           String?
   waPhoneNumberId   String?

@@ -6,6 +6,7 @@ import { ClinicFooter } from "@/components/public/ClinicFooter";
 import { WhatsAppButton } from "@/components/public/WhatsAppButton";
 import { ChatWidget } from "@/components/public/ChatWidget";
 import { brandVars } from "@/lib/brand";
+import { getPlan } from "@/lib/plans";
 
 type Props = { params: Promise<{ slug: string }>; children: React.ReactNode };
 
@@ -30,7 +31,7 @@ export default async function ClinicPublicLayout({ params, children }: Props) {
       <main className="flex-1">{children}</main>
       <ClinicFooter clinic={clinic} />
       {clinic.whatsapp && <WhatsAppButton whatsapp={clinic.whatsapp} clinicName={clinic.name} />}
-      <ChatWidget clinicId={clinic.id} slug={clinic.slug} clinicName={clinic.name} />
+      {getPlan(clinic.plan).ai && <ChatWidget clinicId={clinic.id} slug={clinic.slug} clinicName={clinic.name} />}
     </div>
   );
 }

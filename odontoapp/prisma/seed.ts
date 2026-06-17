@@ -36,6 +36,7 @@ async function main() {
       email: "contato@sorrisoperfeito.com.br",
       primaryColor: "#0ea5e9",
       secondaryColor: "#0369a1",
+      plan: "premium",
       instagram: "https://instagram.com/sorrisoperfeito",
       appointmentBuffer: 15,
       cancelMinHours: 24,

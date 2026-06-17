@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getPlan } from "@/lib/plans";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -16,6 +17,18 @@ const schema = z.object({
 
 export async function createProfessional(formData: FormData) {
   const { clinicId } = await requireClinicSession();
+
+  // Limite de profissionais pelo plano da clínica
+  const clinic = await prisma.clinic.findUnique({ where: { id: clinicId }, select: { plan: true } });
+  const plan = getPlan(clinic?.plan);
+  if (plan.maxProfessionals !== null) {
+    const count = await prisma.professional.count({ where: { clinicId, active: true } });
+    if (count >= plan.maxProfessionals) {
+      throw new Error(
+        `Seu plano ${plan.name} permite até ${plan.maxProfessionals} profissional(is) ativo(s). Faça upgrade para adicionar mais.`,
+      );
+    }
+  }
 
   const parsed = schema.parse({
     name: formData.get("name"),

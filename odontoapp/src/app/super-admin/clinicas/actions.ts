@@ -13,6 +13,7 @@ const HEX = /^#[0-9a-fA-F]{6}$/;
 const createSchema = z.object({
   name: z.string().min(2, "Nome da clínica obrigatório"),
   slug: z.string().optional(),
+  plan: z.enum(["basico", "pro", "premium"]).optional(),
   primaryColor: z.string().regex(HEX).optional(),
   secondaryColor: z.string().regex(HEX).optional(),
   phone: z.string().optional(),
@@ -31,6 +32,7 @@ export async function createClinic(formData: FormData) {
   const data = createSchema.parse({
     name: formData.get("name"),
     slug: (formData.get("slug") as string) || undefined,
+    plan: (formData.get("plan") as string) || undefined,
     primaryColor: (formData.get("primaryColor") as string) || undefined,
     secondaryColor: (formData.get("secondaryColor") as string) || undefined,
     phone: (formData.get("phone") as string) || undefined,
@@ -58,6 +60,7 @@ export async function createClinic(formData: FormData) {
     data: {
       slug,
       name: data.name,
+      plan: data.plan ?? "basico",
       primaryColor: data.primaryColor || "#0ea5e9",
       secondaryColor: data.secondaryColor || "#0369a1",
       phone: data.phone || null,
@@ -84,6 +87,7 @@ const updateSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(2),
   slug: z.string().min(1),
+  plan: z.enum(["basico", "pro", "premium"]).optional(),
   primaryColor: z.string().regex(HEX).optional(),
   secondaryColor: z.string().regex(HEX).optional(),
   phone: z.string().optional(),
@@ -100,6 +104,7 @@ export async function updateClinic(formData: FormData) {
     id: formData.get("id"),
     name: formData.get("name"),
     slug: formData.get("slug"),
+    plan: (formData.get("plan") as string) || undefined,
     primaryColor: (formData.get("primaryColor") as string) || undefined,
     secondaryColor: (formData.get("secondaryColor") as string) || undefined,
     phone: (formData.get("phone") as string) || undefined,
@@ -124,6 +129,7 @@ export async function updateClinic(formData: FormData) {
     data: {
       name: data.name,
       slug,
+      plan: data.plan ?? clinic.plan,
       primaryColor: data.primaryColor || clinic.primaryColor,
       secondaryColor: data.secondaryColor || clinic.secondaryColor,
       phone: data.phone || null,

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { updateClinic } from "../actions";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/form";
+import { PLANS, PLAN_ORDER } from "@/lib/plans";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -53,6 +54,17 @@ export default async function EditarClinica({ params }: Props) {
               <label className={labelClass}>Slug (URL pública) *</label>
               <input name="slug" required defaultValue={clinic.slug} className={inputClass} />
               <p className="mt-1 text-xs text-ink-muted">Página pública: <span className="font-mono">/c/{clinic.slug}</span></p>
+            </div>
+
+            <div>
+              <label className={labelClass}>Plano</label>
+              <select name="plan" defaultValue={clinic.plan} className={inputClass}>
+                {PLAN_ORDER.map((id) => (
+                  <option key={id} value={id}>
+                    {PLANS[id].name} — R$ {PLANS[id].price}/mês
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

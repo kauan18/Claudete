@@ -69,6 +69,7 @@ export async function getClinicBySlug(slug: string) {
       website: true,
       primaryColor: true,
       secondaryColor: true,
+      plan: true,
     },
   });
 }

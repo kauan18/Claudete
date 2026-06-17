@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { requireClinicSession } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { updateClinicSettings } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/form";
+import { getPlan } from "@/lib/plans";
 
 export default async function ConfiguracoesPage() {
   const { clinicId } = await requireClinicSession();
@@ -12,9 +14,16 @@ export default async function ConfiguracoesPage() {
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-ink">Configurações da Clínica</h1>
-        <p className="mt-1 text-ink-muted">Dados públicos e integrações</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-ink">Configurações da Clínica</h1>
+          <p className="mt-1 text-ink-muted">Dados públicos e integrações</p>
+        </div>
+        <div className="rounded-xl border border-line bg-surface px-4 py-2 text-sm shadow-soft">
+          <span className="text-ink-muted">Plano atual: </span>
+          <span className="font-semibold text-ink">{getPlan(clinic.plan).name}</span>
+          <Link href="/planos" className="ml-2 font-medium text-primary hover:underline">ver planos</Link>
+        </div>
       </div>
 
       <form action={updateClinicSettings} className="space-y-6">

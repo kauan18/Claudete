@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Users, CalendarDays, ExternalLink, Plus } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Button } from "@/components/ui/Button";
+import { getPlan } from "@/lib/plans";
 
 export default async function SuperAdminPage() {
   const session = await auth();
@@ -43,7 +44,12 @@ export default async function SuperAdminPage() {
               className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-card"
             >
               <div>
-                <h2 className="font-display text-lg font-bold text-ink">{clinic.name}</h2>
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="font-display text-lg font-bold text-ink">{clinic.name}</h2>
+                  <span className="shrink-0 rounded-full bg-brand-tint px-2.5 py-0.5 text-xs font-semibold text-brand-ink">
+                    {getPlan(clinic.plan).name}
+                  </span>
+                </div>
                 <p className="font-mono text-sm text-primary">/{clinic.slug}</p>
               </div>
               <div className="flex gap-6 text-sm text-ink-muted">

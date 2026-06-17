@@ -4,6 +4,7 @@ import { requireSuperAdmin } from "@/lib/tenant";
 import { createClinic } from "../actions";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/form";
+import { PLANS, PLAN_ORDER } from "@/lib/plans";
 
 export default async function NovaClinica() {
   await requireSuperAdmin();
@@ -34,6 +35,17 @@ export default async function NovaClinica() {
               <label className={labelClass}>Slug (URL pública)</label>
               <input name="slug" className={inputClass} placeholder="deixe vazio para gerar do nome" />
               <p className="mt-1 text-xs text-ink-muted">A página pública ficará em <span className="font-mono">/c/&lt;slug&gt;</span></p>
+            </div>
+
+            <div>
+              <label className={labelClass}>Plano</label>
+              <select name="plan" defaultValue="basico" className={inputClass}>
+                {PLAN_ORDER.map((id) => (
+                  <option key={id} value={id}>
+                    {PLANS[id].name} — R$ {PLANS[id].price}/mês
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

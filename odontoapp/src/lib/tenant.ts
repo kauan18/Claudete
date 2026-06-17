@@ -12,6 +12,9 @@ export async function requireClinicSession() {
   if (!session?.user) redirect("/login");
 
   if (!session.user.clinicId) {
+    // Super-admin não tem clínica própria: manda para o painel dele
+    // (evita exceção ao navegar em páginas de clínica).
+    if (session.user.role === "super_admin") redirect("/super-admin");
     throw new Error("Usuário não pertence a nenhuma clínica.");
   }
 
@@ -19,6 +22,17 @@ export async function requireClinicSession() {
     user: session.user,
     clinicId: session.user.clinicId,
   };
+}
+
+/**
+ * Garante que o usuário logado é super_admin.
+ * Redireciona para /login se anônimo, ou /admin se for de clínica.
+ */
+export async function requireSuperAdmin() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  if (session.user.role !== "super_admin") redirect("/admin");
+  return { user: session.user };
 }
 
 /**

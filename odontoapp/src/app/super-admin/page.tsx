@@ -25,6 +25,10 @@ export default async function SuperAdminPage() {
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            <Button href="/super-admin/usuarios" size="sm" variant="outline">
+              <Users className="h-4 w-4" />
+              Usuários
+            </Button>
             <Button href="/super-admin/clinicas/nova" size="sm">
               <Plus className="h-4 w-4" />
               Nova Clínica

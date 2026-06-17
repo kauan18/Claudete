@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — OdontoApp
+   Tokens semânticos via CSS vars. Dark mode troca apenas as vars (.dark).
+   A cor da clínica entra como --brand / --brand-2 (tripla RGB) no escopo
+   .clinic-scope; os derivados (ink/tint) são recalculados via color-mix.
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: light;
+
+  /* ── Marca (fallback p/ páginas fora de uma clínica: raiz, login) ── */
+  --brand: 13 148 136;   /* teal-600 */
+  --brand-2: 8 145 178;  /* cyan-600 */
+  --brand-ink: color-mix(in srgb, rgb(var(--brand)) 76%, #0b1220);  /* acento legível em fundo claro */
+  --brand-tint: color-mix(in srgb, rgb(var(--brand)) 9%, #ffffff);  /* fundo suave */
+  --brand-tint-2: color-mix(in srgb, rgb(var(--brand)) 16%, #ffffff);
+
+  /* ── Neutros (levemente azulados — "calma clínica", não cinza frio) ── */
+  --bg-page: #eef3fb;
+  --bg-surface: #ffffff;
+  --bg-subtle: #e7eefa;
+  --fg-page: #0f1b2d;
+  --fg-muted: #51607a;
+  --line: #dde6f2;
+
+  /* ── Estados ── */
+  --success: 16 122 87;
+  --error: 190 50 64;
+  --warning: 176 110 8;
+  --info: 8 110 178;
+
+  /* ── Tipografia (variáveis preenchidas pelo next/font) ── */
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --brand-ink: color-mix(in srgb, rgb(var(--brand)) 82%, #ffffff);
+  --brand-tint: color-mix(in srgb, rgb(var(--brand)) 20%, #0a0f1a);
+  --brand-tint-2: color-mix(in srgb, rgb(var(--brand)) 30%, #0a0f1a);
+
+  /* Marinho profundo (preferência do usuário) */
+  --bg-page: #0a0f1a;
+  --bg-surface: #111a2b;
+  --bg-subtle: #0d1626;
+  --fg-page: #e7eefc;
+  --fg-muted: #93a3bd;
+  --line: #21304b;
+
+  --success: 52 199 145;
+  --error: 248 113 133;
+  --warning: 234 179 8;
+  --info: 56 189 248;
+}
+
+/* Escopo da clínica: redeclara os derivados para que color-mix use o --brand
+   do tenant (declarados no MESMO elemento onde --brand é sobrescrito). */
+.clinic-scope {
+  --brand-ink: color-mix(in srgb, rgb(var(--brand)) 76%, #0b1220);
+  --brand-tint: color-mix(in srgb, rgb(var(--brand)) 9%, #ffffff);
+  --brand-tint-2: color-mix(in srgb, rgb(var(--brand)) 16%, #ffffff);
+}
+.dark .clinic-scope {
+  --brand-ink: color-mix(in srgb, rgb(var(--brand)) 82%, #ffffff);
+  --brand-tint: color-mix(in srgb, rgb(var(--brand)) 20%, #0a0f1a);
+  --brand-tint-2: color-mix(in srgb, rgb(var(--brand)) 30%, #0a0f1a);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--fg-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Seleção de texto com a cor da marca */
+::selection {
+  background: color-mix(in srgb, rgb(var(--brand)) 22%, transparent);
+  color: var(--fg-page);
+}
+
+/* Foco visível consistente (acessibilidade) */
+:focus-visible {
+  outline: 2px solid rgb(var(--brand));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Transição suave ao alternar tema — ativada só durante o clique no toggle. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease,
+    fill 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* Animação decorativa suave do hero (respeitando reduced-motion) */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-14px) scale(1.04); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+.animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-float-slow,
+  .animate-fade-up { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}

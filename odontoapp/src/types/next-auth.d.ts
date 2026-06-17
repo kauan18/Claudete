@@ -1,0 +1,17 @@
+import type { UserRole } from "@prisma/client";
+import "next-auth";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role: UserRole;
+      clinicId: string | null;
+      clinicSlug: string | null;
+      clinicName: string | null;
+    };
+  }
+}

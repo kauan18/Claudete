@@ -10,6 +10,7 @@ import {
   Stethoscope,
   Images,
   BookOpen,
+  CreditCard,
   Settings,
   Building2,
   Users,
@@ -36,6 +37,7 @@ const navItems: Item[] = [
   { href: "/admin/profissionais", label: "Profissionais", Icon: Stethoscope },
   { href: "/admin/portfolio", label: "Portfólio", Icon: Images },
   { href: "/admin/conhecimento", label: "Base de Conhecimento", Icon: BookOpen },
+  { href: "/admin/assinatura", label: "Assinatura", Icon: CreditCard },
   { href: "/admin/configuracoes", label: "Configurações", Icon: Settings },
 ];
 

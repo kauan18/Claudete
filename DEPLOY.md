@@ -84,6 +84,20 @@ A Vercel faz o build e publica. Pronto: `https://seuapp.vercel.app/c/sorriso-per
 - [ ] **Upload de imagens em produção:** na Vercel o sistema de arquivos é efêmero — uploads gravados em `public/uploads/` **não persistem**. Para produção, migrar o `POST /api/upload` para **Vercel Blob** ou **Cloudflare R2** (o código está isolado em `src/app/api/upload/route.ts`, troca só a parte de gravação). Em VPS/servidor próprio, a gravação em disco funciona normalmente.
 - [ ] **Domínio próprio** (ex: `app.suaclinica.com.br`) nas configurações de domínio da Vercel.
 - [ ] **WhatsApp Cloud API:** cada clínica configura o próprio token em *Admin → Configurações*.
+- [ ] **Cobrança (Mercado Pago):** definir `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` e `NEXT_PUBLIC_SITE_URL` (ver seção *Ativar cobrança* abaixo).
+
+---
+
+## 💳 Ativar cobrança (Mercado Pago — assinaturas)
+
+Os planos (Básico/Pro/Premium) já têm a integração de assinatura recorrente pronta; falta só configurar a conta:
+
+1. **Credenciais:** em [Mercado Pago Developers](https://www.mercadopago.com.br/developers) → sua aplicação → *Credenciais*. Copie o **Access Token** e defina em `MP_ACCESS_TOKEN`.
+2. **Webhook:** no painel do Mercado Pago, configure a URL de notificações para `https://seuapp.vercel.app/api/webhooks/mercadopago` e copie o **segredo** para `MP_WEBHOOK_SECRET`.
+3. **URL pública:** garanta `NEXT_PUBLIC_SITE_URL=https://seuapp.vercel.app` (o Mercado Pago exige `https` para `notification_url` e `back_url`).
+4. Pronto: em *Admin → Assinatura*, o dentista escolhe o plano e é levado ao checkout do Mercado Pago. Quando o pagamento é autorizado, o webhook ativa o plano automaticamente.
+
+**Como funciona internamente:** `startSubscription` cria um *preapproval* (assinatura recorrente mensal) e redireciona ao checkout. O webhook **nunca confia na notificação** — ele reconsulta o status autoritativo na API do Mercado Pago antes de mudar o plano da clínica. `external_reference = "<clinicId>:<planId>"` reconcilia a assinatura com a clínica. Sem `MP_ACCESS_TOKEN`, o checkout fica desativado (aviso no painel) e o resto do app funciona normalmente.
 
 ---
 

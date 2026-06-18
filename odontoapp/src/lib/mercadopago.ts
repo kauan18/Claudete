@@ -94,6 +94,27 @@ export async function createPreapproval(params: {
   }
 }
 
+/** Cancela uma assinatura (preapproval) no Mercado Pago. */
+export async function cancelPreapproval(id: string): Promise<{ ok: boolean; error?: string }> {
+  if (!isMercadoPagoConfigured()) return { ok: false, error: "Mercado Pago não configurado." };
+  try {
+    const res = await fetch(`${MP_API}/preapproval/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ status: "cancelled" }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      console.error("[mercadopago] erro ao cancelar preapproval:", data);
+      return { ok: false, error: data?.message || "Falha ao cancelar a assinatura." };
+    }
+    return { ok: true };
+  } catch (e) {
+    console.error("[mercadopago] exceção ao cancelar preapproval:", e);
+    return { ok: false, error: "Erro de comunicação com o Mercado Pago." };
+  }
+}
+
 /** Lê o preapproval autoritativo (fonte da verdade do status). */
 export async function getPreapproval(id: string): Promise<Preapproval | null> {
   if (!isMercadoPagoConfigured()) return null;

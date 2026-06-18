@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { sendAppointmentConfirmation } from "@/lib/whatsapp";
 import { getPlan } from "@/lib/plans";
+import { zonedWallToUtc } from "@/lib/availability";
 
 const manualSchema = z.object({
   patientName: z.string().min(2, "Nome obrigatório"),
@@ -64,6 +65,44 @@ export async function createAppointmentManual(formData: FormData) {
   revalidatePath("/admin/agenda");
   revalidatePath("/admin");
   redirect("/admin/agendamentos");
+}
+
+const rescheduleSchema = z.object({
+  id: z.string().min(1),
+  date: z.string().min(1, "Data obrigatória"),
+  time: z.string().min(1, "Horário obrigatório"),
+});
+
+export async function rescheduleAppointment(formData: FormData) {
+  const { clinicId } = await requireClinicSession();
+
+  const data = rescheduleSchema.parse({
+    id: formData.get("id"),
+    date: formData.get("date"),
+    time: formData.get("time"),
+  });
+
+  const appt = await prisma.appointment.findFirst({
+    where: { id: data.id, clinicId },
+    include: { service: true },
+  });
+  if (!appt) throw new Error("Agendamento não encontrado.");
+
+  // Converte o horário local (fuso da clínica) para UTC corretamente.
+  const scheduledAt = zonedWallToUtc(data.date, data.time);
+  if (isNaN(scheduledAt.getTime())) throw new Error("Data/hora inválida.");
+  const endsAt = new Date(scheduledAt.getTime() + appt.service.durationMin * 60000);
+
+  await prisma.appointment.update({
+    where: { id: data.id },
+    // Remarcou → os lembretes precisam ser reenviados para o novo horário.
+    data: { scheduledAt, endsAt, reminderSent24h: false, reminderSent1h: false },
+  });
+
+  revalidatePath("/admin/agendamentos");
+  revalidatePath("/admin/agenda");
+  revalidatePath(`/admin/agendamentos/${data.id}`);
+  redirect(`/admin/agendamentos/${data.id}`);
 }
 
 export async function updateAppointmentStatus(formData: FormData) {

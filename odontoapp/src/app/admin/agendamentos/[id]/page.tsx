@@ -3,8 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, CheckCheck, UserX, XCircle } from "lucide-react";
-import { updateAppointmentStatus } from "../actions";
+import { updateAppointmentStatus, rescheduleAppointment } from "../actions";
 import { STATUS_LABELS, statusBadge } from "@/lib/appointmentStatus";
+import { CLINIC_TIMEZONE } from "@/lib/availability";
+import { Button } from "@/components/ui/Button";
+import { inputClass, labelClass } from "@/components/ui/form";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -18,6 +21,20 @@ export default async function AgendamentoDetail({ params }: Props) {
   });
 
   if (!appt) notFound();
+
+  const canReschedule = appt.status === "solicitado" || appt.status === "confirmado";
+  const dateValue = new Intl.DateTimeFormat("en-CA", {
+    timeZone: CLINIC_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(appt.scheduledAt);
+  const timeValue = new Intl.DateTimeFormat("en-GB", {
+    timeZone: CLINIC_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(appt.scheduledAt);
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -78,6 +95,25 @@ export default async function AgendamentoDetail({ params }: Props) {
           </StatusButton>
         )}
       </div>
+
+      {/* Reagendar */}
+      {canReschedule && (
+        <form action={rescheduleAppointment} className="space-y-4 rounded-2xl border border-line bg-surface p-6 shadow-soft">
+          <input type="hidden" name="id" value={appt.id} />
+          <h2 className="font-display font-semibold text-ink">Reagendar</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className={labelClass}>Nova data</label>
+              <input name="date" type="date" required defaultValue={dateValue} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Novo horário</label>
+              <input name="time" type="time" required step={300} defaultValue={timeValue} className={inputClass} />
+            </div>
+          </div>
+          <Button type="submit" size="sm">Salvar novo horário</Button>
+        </form>
+      )}
     </div>
   );
 }

@@ -78,7 +78,7 @@ export default function PlanosPage() {
                 </ul>
 
                 <Link
-                  href="/login"
+                  href="/admin/assinatura"
                   className={`mt-7 inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition-colors ${
                     featured
                       ? "bg-primary text-white hover:bg-brand-ink"

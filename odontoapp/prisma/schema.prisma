@@ -35,6 +35,11 @@ model Clinic {
   // Plano de assinatura: basico | pro | premium
   plan String @default("basico")
 
+  // Assinatura (Mercado Pago)
+  subscriptionStatus    String    @default("none") // none | pending | authorized | paused | cancelled
+  mpPreapprovalId       String?
+  subscriptionUpdatedAt DateTime?
+
   // WhatsApp Cloud API (por tenant)
   waToken           String?
   waPhoneNumberId   String?

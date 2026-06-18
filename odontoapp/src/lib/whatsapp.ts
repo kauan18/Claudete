@@ -152,6 +152,7 @@ export async function sendAppointmentConfirmation(params: {
   professionalName: string;
   scheduledAt: Date;
   credentials: WhatsAppCredentials | null;
+  cancelUrl?: string;
 }) {
   const dateStr = params.scheduledAt.toLocaleString("pt-BR", {
     dateStyle: "full",
@@ -159,9 +160,11 @@ export async function sendAppointmentConfirmation(params: {
     timeZone: "America/Sao_Paulo",
   });
 
+  const cancelLine = params.cancelUrl ? `\n\nPrecisa cancelar? ${params.cancelUrl}` : "";
+
   return sendWhatsAppText({
     to: params.patientPhone,
-    message: `✅ *Consulta confirmada!*\n\nOlá, ${params.patientName}! Sua consulta foi confirmada.\n\n🏥 ${params.clinicName}\n🦷 Serviço: ${params.serviceName}\n👨‍⚕️ Profissional: ${params.professionalName}\n📅 ${dateStr}\n\nEm caso de necessidade, cancele com pelo menos 24h de antecedência. Até logo!`,
+    message: `✅ *Consulta confirmada!*\n\nOlá, ${params.patientName}! Sua consulta foi confirmada.\n\n🏥 ${params.clinicName}\n🦷 Serviço: ${params.serviceName}\n👨‍⚕️ Profissional: ${params.professionalName}\n📅 ${dateStr}${cancelLine}\n\nAté logo!`,
     credentials: params.credentials,
   });
 }

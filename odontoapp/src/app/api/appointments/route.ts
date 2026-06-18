@@ -5,6 +5,8 @@ import { z } from "zod";
 import { notifyClinicNewAppointment } from "@/lib/whatsapp";
 import { getPlan } from "@/lib/plans";
 import { isWithinHours } from "@/lib/availability";
+import { cancelPath } from "@/lib/appointmentToken";
+import { absoluteUrl } from "@/lib/site";
 import { conflictWhere } from "@/lib/scheduling";
 import { rateLimit, clientKey } from "@/lib/rate-limit";
 
@@ -145,7 +147,8 @@ export async function POST(req: NextRequest) {
         }).catch(console.error);
       }
 
-      return NextResponse.json({ id: result.id }, { status: 201 });
+      const cancelUrl = absoluteUrl(cancelPath(clinic.slug, result.id));
+      return NextResponse.json({ id: result.id, cancelUrl }, { status: 201 });
     } catch (e) {
       // P2034 = conflito de escrita / falha de serialização → vale retry.
       const isSerializationFailure = e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2034";

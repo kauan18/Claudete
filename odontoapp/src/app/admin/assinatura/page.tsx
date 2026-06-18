@@ -1,7 +1,8 @@
 import { requireClinicSession } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { Check, AlertCircle } from "lucide-react";
-import { startSubscription } from "./actions";
+import { startSubscription, cancelSubscription } from "./actions";
+import { ConfirmSubmitButton } from "@/components/admin/ConfirmSubmitButton";
 import { PLANS, PLAN_ORDER, getPlan } from "@/lib/plans";
 import { isMercadoPagoConfigured } from "@/lib/mercadopago";
 
@@ -55,9 +56,21 @@ export default async function AssinaturaPage({
           <p className="text-sm text-ink-muted">Plano atual</p>
           <p className="font-display text-lg font-bold text-ink">{current.name} — R$ {current.price}/mês</p>
         </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[status] ?? STATUS_BADGE.none}`}>
-          {STATUS_LABEL[status] ?? status}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[status] ?? STATUS_BADGE.none}`}>
+            {STATUS_LABEL[status] ?? status}
+          </span>
+          {(status === "authorized" || status === "pending") && (
+            <form action={cancelSubscription}>
+              <ConfirmSubmitButton
+                confirmMessage="Cancelar a assinatura? A clínica voltará ao plano Básico."
+                className="text-xs font-medium text-danger hover:underline"
+              >
+                Cancelar assinatura
+              </ConfirmSubmitButton>
+            </form>
+          )}
+        </div>
       </div>
 
       {!configured && (

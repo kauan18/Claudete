@@ -5,6 +5,7 @@ import { updateClinicSettings } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass } from "@/components/ui/form";
 import { getPlan } from "@/lib/plans";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export default async function ConfiguracoesPage() {
   const { clinicId } = await requireClinicSession();
@@ -31,6 +32,10 @@ export default async function ConfiguracoesPage() {
 
         <section className="space-y-5 rounded-2xl border border-line bg-surface p-6 shadow-soft">
           <h2 className="font-display font-semibold text-ink">Dados da Clínica</h2>
+
+          <div className="max-w-xs">
+            <ImageUpload name="logo" label="Logo da clínica" defaultValue={clinic.logo} />
+          </div>
 
           <Field label="Nome da clínica *" name="name" defaultValue={clinic.name} required />
           <Field label="Slug (URL pública)" name="slug" defaultValue={clinic.slug} required hint={`/c/${clinic.slug}`} />

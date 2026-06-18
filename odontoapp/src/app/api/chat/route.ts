@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { generateAgentResponse, fallbackResponse, type ClinicContext } from "@/lib/ai";
 import { rateLimit, clientKey } from "@/lib/rate-limit";
+import { getPlan } from "@/lib/plans";
 
 const schema = z.object({
   clinicId: z.string(),
@@ -64,14 +65,20 @@ export async function POST(req: NextRequest) {
 
   const lastUser = messages[messages.length - 1].content;
 
+  // Gate de plano: a IA real só roda em planos com IA (premium). Sem isso,
+  // qualquer um poderia POSTar com um clinicId de plano básico e consumir IA.
+  const aiEnabled = getPlan(clinic.plan).ai;
+
   let reply: string | null = null;
   let usedAI = false;
-  try {
-    reply = await generateAgentResponse(context, messages);
-    usedAI = reply !== null;
-  } catch (e) {
-    console.error("[chat] erro ao gerar resposta da IA:", e);
-    reply = null;
+  if (aiEnabled) {
+    try {
+      reply = await generateAgentResponse(context, messages);
+      usedAI = reply !== null;
+    } catch (e) {
+      console.error("[chat] erro ao gerar resposta da IA:", e);
+      reply = null;
+    }
   }
 
   if (!reply) reply = fallbackResponse(context, lastUser);

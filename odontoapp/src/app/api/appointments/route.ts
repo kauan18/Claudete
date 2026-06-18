@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { notifyClinicNewAppointment } from "@/lib/whatsapp";
+import { getPlan } from "@/lib/plans";
 import { isWithinHours } from "@/lib/availability";
 import { conflictWhere } from "@/lib/scheduling";
 import { rateLimit, clientKey } from "@/lib/rate-limit";
@@ -130,7 +131,8 @@ export async function POST(req: NextRequest) {
       }
 
       // Notificar a clínica via WhatsApp (best-effort, não bloqueia a resposta).
-      if (clinic.whatsapp) {
+      // Apenas planos que incluem WhatsApp.
+      if (clinic.whatsapp && getPlan(clinic.plan).whatsapp) {
         notifyClinicNewAppointment({
           clinicWhatsapp: clinic.whatsapp,
           patientName,

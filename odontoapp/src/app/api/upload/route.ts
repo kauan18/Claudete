@@ -24,8 +24,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Nenhum arquivo enviado" }, { status: 400 });
   }
 
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  if (!allowedTypes.includes(file.type)) {
+  // Extensão derivada SEMPRE do MIME validado — nunca de file.name (que é
+  // forjável). Evita gravar .html/.svg/.js e servir conteúdo executável na
+  // mesma origem da app (XSS armazenado). SVG fica de fora de propósito.
+  const EXT_BY_MIME: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  };
+  const ext = EXT_BY_MIME[file.type];
+  if (!ext) {
     return NextResponse.json({ error: "Tipo de arquivo não permitido" }, { status: 400 });
   }
 
@@ -33,7 +42,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Arquivo muito grande (máx 8MB)" }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const uploadDir = path.join(process.cwd(), "public", "uploads", clinicId);
 

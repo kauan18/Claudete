@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendAppointmentReminder } from "@/lib/whatsapp";
+import { getPlan } from "@/lib/plans";
 
 /**
  * Job de lembretes — chamado pelo cron (Vercel Cron ou similar).
@@ -38,14 +39,17 @@ export async function GET(req: NextRequest) {
   });
 
   for (const appt of due24h) {
-    await sendAppointmentReminder({
-      patientPhone: appt.patientPhone,
-      patientName: appt.patientName,
-      clinicName: appt.clinic.name,
-      scheduledAt: appt.scheduledAt,
-      hoursAhead: 24,
-      credentials: credsOf(appt.clinic),
-    }).catch((e) => console.error("[cron/reminders] 24h:", e));
+    if (getPlan(appt.clinic.plan).whatsapp) {
+      await sendAppointmentReminder({
+        patientPhone: appt.patientPhone,
+        patientName: appt.patientName,
+        clinicName: appt.clinic.name,
+        scheduledAt: appt.scheduledAt,
+        hoursAhead: 24,
+        credentials: credsOf(appt.clinic),
+      }).catch((e) => console.error("[cron/reminders] 24h:", e));
+    }
+    // Marca como enviado mesmo sem WhatsApp para não reprocessar a cada execução.
     await prisma.appointment.update({ where: { id: appt.id }, data: { reminderSent24h: true } });
   }
 
@@ -60,14 +64,16 @@ export async function GET(req: NextRequest) {
   });
 
   for (const appt of due1h) {
-    await sendAppointmentReminder({
-      patientPhone: appt.patientPhone,
-      patientName: appt.patientName,
-      clinicName: appt.clinic.name,
-      scheduledAt: appt.scheduledAt,
-      hoursAhead: 1,
-      credentials: credsOf(appt.clinic),
-    }).catch((e) => console.error("[cron/reminders] 1h:", e));
+    if (getPlan(appt.clinic.plan).whatsapp) {
+      await sendAppointmentReminder({
+        patientPhone: appt.patientPhone,
+        patientName: appt.patientName,
+        clinicName: appt.clinic.name,
+        scheduledAt: appt.scheduledAt,
+        hoursAhead: 1,
+        credentials: credsOf(appt.clinic),
+      }).catch((e) => console.error("[cron/reminders] 1h:", e));
+    }
     await prisma.appointment.update({ where: { id: appt.id }, data: { reminderSent1h: true } });
   }
 

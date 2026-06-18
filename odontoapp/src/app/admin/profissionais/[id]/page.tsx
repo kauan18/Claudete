@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { updateProfessional } from "../actions";
 import { Button } from "@/components/ui/Button";
 import { inputClass, labelClass, checkboxClass } from "@/components/ui/form";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -33,9 +34,8 @@ export default async function EditarProfissional({ params }: Props) {
           <label className={labelClass}>Bio</label>
           <textarea name="bio" rows={4} defaultValue={pro.bio ?? ""} className={`${inputClass} resize-none`} />
         </div>
-        <div>
-          <label className={labelClass}>URL da foto</label>
-          <input name="photo" type="url" defaultValue={pro.photo ?? ""} className={inputClass} />
+        <div className="max-w-xs">
+          <ImageUpload name="photo" label="Foto do profissional" defaultValue={pro.photo} />
         </div>
         <div className="flex items-center gap-3">
           <input type="hidden" name="active" value="false" />

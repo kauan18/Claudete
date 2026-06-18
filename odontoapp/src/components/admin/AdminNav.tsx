@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Stethoscope,
   Images,
+  BookOpen,
   Settings,
   Building2,
   Users,
@@ -34,6 +35,7 @@ const navItems: Item[] = [
   { href: "/admin/servicos", label: "Serviços", Icon: ToothMark },
   { href: "/admin/profissionais", label: "Profissionais", Icon: Stethoscope },
   { href: "/admin/portfolio", label: "Portfólio", Icon: Images },
+  { href: "/admin/conhecimento", label: "Base de Conhecimento", Icon: BookOpen },
   { href: "/admin/configuracoes", label: "Configurações", Icon: Settings },
 ];
 

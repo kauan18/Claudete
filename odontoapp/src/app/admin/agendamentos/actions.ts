@@ -8,6 +8,8 @@ import { z } from "zod";
 import { sendAppointmentConfirmation } from "@/lib/whatsapp";
 import { getPlan } from "@/lib/plans";
 import { zonedWallToUtc } from "@/lib/availability";
+import { cancelPath } from "@/lib/appointmentToken";
+import { absoluteUrl } from "@/lib/site";
 
 const manualSchema = z.object({
   patientName: z.string().min(2, "Nome obrigatório"),
@@ -127,6 +129,7 @@ export async function updateAppointmentStatus(formData: FormData) {
       serviceName: appt.service.name,
       professionalName: appt.professional.name,
       scheduledAt: appt.scheduledAt,
+      cancelUrl: absoluteUrl(cancelPath(appt.clinic.slug, appt.id)),
       credentials:
         appt.clinic.waToken && appt.clinic.waPhoneNumberId
           ? { token: appt.clinic.waToken, phoneNumberId: appt.clinic.waPhoneNumberId }

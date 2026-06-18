@@ -49,6 +49,7 @@ export function AppointmentForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [cancelUrl, setCancelUrl] = useState("");
 
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
@@ -124,6 +125,8 @@ export function AppointmentForm({
       return;
     }
 
+    const data = await res.json().catch(() => ({}));
+    setCancelUrl(data.cancelUrl ?? "");
     setSuccess(true);
   }
 
@@ -137,6 +140,14 @@ export function AppointmentForm({
         <p className="max-w-sm text-ink-muted">
           Recebemos sua solicitação. Entraremos em contato para confirmar o agendamento.
         </p>
+        {cancelUrl && (
+          <a
+            href={cancelUrl}
+            className="max-w-sm text-sm font-medium text-primary hover:underline"
+          >
+            Acompanhar ou cancelar esta consulta
+          </a>
+        )}
         <Button onClick={() => router.push(`/c/${slug}`)} className="mt-2">
           Voltar ao início
         </Button>

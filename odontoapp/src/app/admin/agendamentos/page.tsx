@@ -2,7 +2,7 @@ import { requireClinicSession } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react";
 import { updateAppointmentStatus } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -48,10 +48,19 @@ export default async function AgendamentosPage({
           <h1 className="font-display text-2xl font-bold text-ink">Agendamentos</h1>
           <p className="mt-1 text-ink-muted">{total} agendamento(s)</p>
         </div>
-        <Button href="/admin/agendamentos/novo" size="sm">
-          <Plus className="h-4 w-4" />
-          Novo Agendamento
-        </Button>
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/admin/export/agendamentos${statusFilter ? `?status=${statusFilter}` : ""}`}
+            className="inline-flex h-9 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-subtle"
+          >
+            <Download className="h-4 w-4" />
+            Exportar CSV
+          </a>
+          <Button href="/admin/agendamentos/novo" size="sm">
+            <Plus className="h-4 w-4" />
+            Novo Agendamento
+          </Button>
+        </div>
       </div>
 
       {/* Filtros */}
